@@ -1,34 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from './hooks'
+import { startQuiz, submitAnswer, fetchResult } from './features/quiz/quizSlice'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dispatch = useAppDispatch()
+  const { sessionId, questions, result, status } = useAppSelector((s) => s.quiz)
+
+  useEffect(() => {
+    dispatch(startQuiz())
+  }, [dispatch])
+
+  const handleAnswer = (qId: string, aId: string) => {
+    if (!sessionId) return
+    dispatch(submitAnswer({ sessionId, questionId: qId, answerId: aId }))
+  }
+
+  const handleFinish = () => {
+    if (sessionId) dispatch(fetchResult(sessionId))
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+    <div>
+      <h1>Quiz</h1>
+      {status === 'loading' && <p>Loading...</p>}
+      {questions.map((q) => (
+        <div key={q.id}>
+          <p>{q.text}</p>
+          {q.answers.map((a) => (
+            <button key={a.id} onClick={() => handleAnswer(q.id, a.id)}>
+              {a.text}
+            </button>
+          ))}
+        </div>
+      ))}
+      {sessionId && !result && (
+        <button onClick={handleFinish}>Finish Quiz</button>
+      )}
+      {result && (
         <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+          Score: {result.score} / {result.total}
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      )}
+    </div>
   )
 }
 
