@@ -1,9 +1,31 @@
 import { useEffect } from 'react'
+import * as stylex from '@stylexjs/stylex'
 import Question from './Question'
 import QuizResult from './QuizResult'
 import { useAppDispatch, useAppSelector } from '../utils/hooks'
-import { startQuiz, submitAnswer, fetchResult } from '../features/quiz/quizSlice'
+import {
+  startQuiz,
+  submitAnswer,
+  fetchResult,
+} from '../features/quiz/quizSlice'
 import type { Question as QuestionType } from '../types/quiz'
+
+const styles = stylex.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '1rem',
+  },
+  heading: { fontSize: '2rem' },
+  finishButton: {
+    padding: '0.5rem 1rem',
+    border: 'none',
+    borderRadius: '4px',
+    backgroundColor: '#646cff',
+    color: '#fff',
+  },
+})
 
 export default function Quiz() {
   const dispatch = useAppDispatch()
@@ -23,14 +45,16 @@ export default function Quiz() {
   }
 
   return (
-    <div>
-      <h1>Quiz</h1>
+    <div {...stylex.props(styles.container)}>
+      <h1 {...stylex.props(styles.heading)}>Quiz</h1>
       {status === 'loading' && <p>Loading...</p>}
       {questions.map((q: QuestionType) => (
         <Question key={q.id} question={q} onAnswer={handleAnswer} />
       ))}
       {sessionId && !result && (
-        <button onClick={handleFinish}>Finish Quiz</button>
+        <button {...stylex.props(styles.finishButton)} onClick={handleFinish}>
+          Finish Quiz
+        </button>
       )}
       {result && <QuizResult result={result} />}
     </div>
