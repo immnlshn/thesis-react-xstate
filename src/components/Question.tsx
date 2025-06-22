@@ -2,12 +2,19 @@ import * as stylex from '@stylexjs/stylex'
 import type { Question } from '../types/quiz'
 
 const styles = stylex.create({
-  container: { marginBottom: '1rem' },
+  container: {
+    marginBottom: '1rem',
+    backgroundColor: '#f9f9f9',
+    padding: '1rem',
+    borderRadius: '8px',
+  },
   button: {
     marginRight: '0.5rem',
     padding: '0.25rem 0.5rem',
     border: '1px solid #ccc',
     borderRadius: '4px',
+    backgroundColor: '#1a1a1a',
+    color: '#fff',
   },
 })
 
