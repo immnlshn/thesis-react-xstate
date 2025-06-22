@@ -1,42 +1,12 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import api from '../../api'
-
-export interface AnswerOption {
-  id: string
-  text: string
-}
-
-export interface Question {
-  id: string
-  text: string
-  answers: AnswerOption[]
-}
-
-export interface QuizResult {
-  score: number
-  total: number
-  correctAnswers: Record<string, string>
-}
-
-interface StartQuizResponse {
-  sessionId: string
-  questions: Question[]
-}
-
-interface SubmitAnswerPayload {
-  sessionId: string
-  questionId: string
-  answerId: string
-}
-
-export interface QuizState {
-  sessionId?: string
-  questions: Question[]
-  answers: Record<string, string>
-  result?: QuizResult
-  status: 'idle' | 'loading' | 'error'
-  error?: string
-}
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import api from '../../utils/api'
+import type {
+  QuizResult,
+  StartQuizResponse,
+  SubmitAnswerPayload,
+  QuizState,
+} from '../../types/quiz'
 
 const initialState: QuizState = {
   questions: [],
@@ -95,7 +65,7 @@ const quizSlice = createSlice({
         state.status = 'error'
         state.error = action.error.message
       })
-      .addCase(submitAnswer.fulfilled, (state, action) => {
+      .addCase(submitAnswer.fulfilled, () => {
         // nothing to store from response except maybe correctness
       })
       .addCase(fetchResult.fulfilled, (state, action: PayloadAction<QuizResult>) => {
