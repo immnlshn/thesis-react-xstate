@@ -129,6 +129,12 @@
   color: #5e81ac;
 }
 
+.result-answer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .quiz-toast {
   position: fixed;
   left: 50%;
@@ -144,12 +150,21 @@
   animation: fadeInOut 1.5s;
   text-align: center;
 }
-.toast-correct {
+
+.correct {
+  color: #7be881;
+}
+
+.wrong {
+  color: #ffb3b3;
+}
+
+.quiz-toast.correct {
   background: #d1f7c4;
   color: #256029;
   border: 1.5px solid #7be881;
 }
-.toast-wrong {
+.quiz-toast.wrong {
   background: #ffe0e0;
   color: #a33a3a;
   border: 1.5px solid #ffb3b3;

@@ -1,29 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useAppSelector } from '../store';
 
-interface QuizToastProps {
-  correct: boolean | null;
-}
-
-const QuizToast: React.FC<QuizToastProps> = ({ correct }) => {
+const QuizToast: React.FC = () => {
+  const correct = useAppSelector((state) => state.quiz.lastAnswerCorrect);
+  const currentIndex = useAppSelector((state) => state.quiz.currentIndex);
   const [show, setShow] = useState(false);
+  const prevIndex = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
-  const prevCorrect = useRef<boolean | null>(null);
 
   useEffect(() => {
-    if (correct !== null && correct !== prevCorrect.current) {
+    if (currentIndex !== prevIndex.current && correct !== null) {
       setShow(true);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = window.setTimeout(() => setShow(false), 1500);
     }
-    prevCorrect.current = correct;
+    prevIndex.current = currentIndex;
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [correct]);
+  }, [currentIndex, correct]);
 
   if (!show || correct === null) return null;
   return (
-    <div className={`quiz-toast ${correct ? 'toast-correct' : 'toast-wrong'}`} role="status">
+    <div className={`quiz-toast ${correct ? 'correct' : 'wrong'}`} role="status">
       {correct ? 'Richtig!' : 'Leider falsch.'}
     </div>
   );

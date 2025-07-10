@@ -1,5 +1,7 @@
-import { useAppSelector } from '../store';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import { useAppSelector, useAppDispatch } from '../store';
+import { fetchQuizSession, fetchQuizResult, resetQuizError } from '../slices/QuizSlice';
+import { setLoaderVisibility } from '../slices/LoaderSlice';
 
 const loaderTextMap: Record<string, string> = {
   init: 'Lade Quiz...',
@@ -8,16 +10,44 @@ const loaderTextMap: Record<string, string> = {
 };
 
 const Loader: React.FC = () => {
-  const loaderVisible = useAppSelector((state) => state.quiz.loaderVisible);
-  const loaderPhase = useAppSelector((state) => state.quiz.loaderPhase);
-  const status = useAppSelector((state) => state.quiz.status);
-  const error = useAppSelector((state) => state.quiz.error);
+  const dispatch = useAppDispatch();
+  const loaderVisible = useAppSelector((state) => state.loader.visible);
+  const loaderPhase = useAppSelector((state) => state.loader.phase);
+  const error = useAppSelector((state) => state.loader.error);
   const session = useAppSelector((state) => state.quiz.session);
-  const text = loaderTextMap[loaderPhase || 'init'] || 'Lade Quiz...';
-  const noQuiz = status === 'idle' && !loaderVisible && !error && !loaderPhase && !session;
-  const isError = status === 'failed' && error;
+  const isError = !!error;
 
-  if (!loaderVisible && !noQuiz) return null;
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    let timeout: number | null = null;
+    if (loaderPhase || isError) {
+      setText(loaderTextMap[loaderPhase || 'init'] || 'Lade...');
+      dispatch(setLoaderVisibility(true));
+    } else {
+      timeout = setTimeout(() => {
+        setText("");
+        dispatch(setLoaderVisibility(false));
+      }, 500);
+    }
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [loaderPhase, isError, dispatch]);
+
+
+  const handleRetry = () => {
+    dispatch(resetQuizError());
+    dispatch(setLoaderVisibility(false));
+    if (loaderPhase === 'result' && session) {
+      dispatch(fetchQuizResult(session.sessionId));
+    } else {
+      dispatch(fetchQuizSession());
+    }
+  };
+
+  if (!loaderVisible) return null;
+
   return (
     <div className="quiz-loader">
       <div className={`loader-bar${isError ? ' error' : ''}`}>
@@ -26,15 +56,12 @@ const Loader: React.FC = () => {
       <div className="loader-text">
         {isError ? (
           <span className="loader-error">
-            Fehler: {error === 'Failed to start quiz session' ? 'Quiz konnte nicht gestartet werden.' :
-                     error === 'Failed to submit answer' ? 'Antwort konnte nicht übermittelt werden.' :
-                     error === 'Failed to fetch result' ? 'Ergebnis konnte nicht geladen werden.' :
-                     error}
+            Fehler: {error}
+            <br />
+            <button className="quiz-retry-btn" onClick={handleRetry}>Erneut versuchen</button>
           </span>
-        ) : noQuiz ? (
-          <span>Kein Quiz gefunden.</span>
         ) : (
-          text
+          <span>{text}</span>
         )}
       </div>
     </div>
