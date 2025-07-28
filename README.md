@@ -1,16 +1,16 @@
-# Quiz-Frontend (React + Redux Toolkit + TypeScript)
+# Quiz-Frontend (React + XState + TypeScript)
 
 Dieses Projekt ist Teil der Bachelorarbeit mit dem Titel:
 
 **„Migration bestehender Webkomponenten zu einer zustands- und komponentenbasierten Frontend-Architektur“**
 
-Kapitel 3.3.2 – Beispielhafte Umsetzung mit React, Redux Toolkit und TypeScript
+Kapitel 3.3.3 – Beispielhafte Umsetzung mit React, XState und TypeScript
 
 ---
 
 ## Übersicht
 
-Diese Anwendung ist ein Quiz-Frontend, das als Beispiel für die Migration und den Aufbau moderner, zustandsbasierter Frontend-Architekturen dient. Die App nutzt React, Redux Toolkit und TypeScript und kommuniziert mit einem separaten Backend.
+Diese Anwendung ist ein Quiz-Frontend, das als Beispiel für die Migration und den Aufbau moderner, zustandsbasierter Frontend-Architekturen dient. Die App nutzt React, XState und TypeScript und kommuniziert mit einem separaten Backend.
 
 Das zugehörige Backend ist hier zu finden:
 [https://github.com/immnlshn/thesis-api-server](https://github.com/immnlshn/thesis-api-server)
@@ -20,9 +20,9 @@ Das zugehörige Backend ist hier zu finden:
 ## Features
 
 - Moderne React-Komponentenstruktur (funktional, Hooks)
-- Globale State-Verwaltung mit Redux Toolkit
+- Statemachine mit XState für komplexe Logik
 - Asynchrone Datenabfragen (Quiz starten, Antworten absenden, Ergebnis anzeigen)
-- Loader- und Fehlerhandling zentral über Redux-State
+- Zentrale Ladezustandsbehandlung (Fehlerbehandlung wurde aus Zeitgründen nicht implementiert)
 - TypeScript für Typensicherheit
 - Responsive und übersichtliche UI
 
@@ -31,8 +31,9 @@ Das zugehörige Backend ist hier zu finden:
 ## Projektstruktur
 
 - **src/components/** – UI-Komponenten (Quiz, Loader, Question, Result, ...)
-- **src/slices/** – Redux-Slices (insb. QuizSlice für State und Thunks)
+- **src/machines/** – XState-Statemachine für Quiz-Logik
 - **src/models/** – TypeScript-Typen für Datenmodelle
+- **src/types/** – Typdefinitionen für XState-Statemachine
 - **src/utils/** – Hilfsfunktionen
 
 ---
