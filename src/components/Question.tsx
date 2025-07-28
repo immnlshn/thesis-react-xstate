@@ -1,14 +1,19 @@
 import React from 'react';
-import type { Question } from '../models/Question';
 import type { Answer } from '../models/Answer';
 
-interface QuestionProps {
-  question: Question;
-  onSelect: (answerId: string) => void;
-  selectedAnswerId?: string;
-}
+import QuizMachineContext from '../QuizMachineContext';
 
-const QuestionComponent: React.FC<QuestionProps> = ({ question, onSelect, selectedAnswerId }) => {
+
+const QuestionComponent: React.FC = () => {
+  const quizMachineRef = QuizMachineContext.useActorRef()
+  const question = QuizMachineContext.useSelector(state => state.context.session?.questions[state.context.currentIndex]);
+  const selectedAnswerId = QuizMachineContext.useSelector(state =>
+    state.context.selectedAnswer || null)?.answerId;
+
+  if (!question) {
+    return null;
+  }
+
   return (
     <div className="question">
       <h3 className="question-title">{question.text}</h3>
@@ -16,7 +21,7 @@ const QuestionComponent: React.FC<QuestionProps> = ({ question, onSelect, select
         {question.answers.map((answer: Answer) => (
           <button
             key={answer.id}
-            onClick={() => onSelect(answer.id)}
+            onClick={() => quizMachineRef.send({ type: 'select', answer: { questionId: question.id, answerId: answer.id }})}
             className={`answer-btn${selectedAnswerId === answer.id ? ' selected' : ''}`}
           >
             {answer.text}

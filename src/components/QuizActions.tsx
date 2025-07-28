@@ -1,18 +1,25 @@
 import React from 'react';
+import {getProgress} from "../utils/quizUtils.ts";
 
-interface QuizActionsProps {
-  onSubmit: () => void;
-  disabled: boolean;
-  children?: React.ReactNode;
+import QuizMachineContext from "../QuizMachineContext.ts";
+
+const QuizActions: React.FC = () => {
+  const quizMachineRef = QuizMachineContext.useActorRef();
+  const currentIndex = QuizMachineContext.useSelector(state => state.context.currentIndex);
+  const questionsLength = QuizMachineContext.useSelector(state => state.context.session?.questions.length || 0);
+  const selectedAnswer = QuizMachineContext.useSelector(state => state.context.selectedAnswer);
+
+  return (
+      <div className="quiz-actions">
+        <button onClick={() => quizMachineRef.send({ type: "submit" })} disabled={selectedAnswer === null}>
+          Antwort absenden
+        </button>
+        <div className="quiz-progress">
+          Fortschritt: {getProgress(currentIndex, questionsLength)}
+        </div>
+      </div>
+  );
 }
 
-const QuizActions: React.FC<QuizActionsProps> = ({ onSubmit, disabled, children }) => (
-  <div className="quiz-actions">
-    <button onClick={onSubmit} disabled={disabled}>
-      Antwort absenden
-    </button>
-    {children}
-  </div>
-);
 
 export default QuizActions;

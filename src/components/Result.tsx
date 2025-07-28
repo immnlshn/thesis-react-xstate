@@ -1,22 +1,15 @@
 import React from 'react';
-import { useAppSelector } from '../store';
+import QuizMachineContext from "../QuizMachineContext.ts";
 
-interface ResultProps {
-  onRestart: () => void;
-}
 
-const Result: React.FC<ResultProps> = ({ onRestart }) => {
-  const { session, userAnswers, result } = useAppSelector((state) => state.quiz);
-  const questions = session?.questions || [];
+const Result: React.FC = () => {
+  const questions = QuizMachineContext.useSelector((state) => state.context.session?.questions || []);
+  const result = QuizMachineContext.useSelector((state) => state.context.result || null);
+  const quizMachineRef = QuizMachineContext.useActorRef();
+  const userAnswers = QuizMachineContext.useSelector((state) => state.context.userAnswers || []);
 
-  if (!result || !session) {
-    return (
-      <div className="result">
-        <h2 className="result-title">Ergebnis</h2>
-        <p className="result-details">Keine Ergebnisse verfügbar.</p>
-        <button onClick={onRestart}>Quiz neu starten</button>
-      </div>
-    );
+  if (!result) {
+    return null;
   }
 
   return (
@@ -60,7 +53,7 @@ const Result: React.FC<ResultProps> = ({ onRestart }) => {
           );
         })}
       </ul>
-      <button onClick={onRestart}>
+      <button onClick={() => quizMachineRef.send({type: "restart"})}>
         Quiz neu starten
       </button>
     </div>

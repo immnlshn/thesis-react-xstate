@@ -29,6 +29,12 @@
   color: #a3a3b3;
 }
 
+.quiz-error {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
 .question {
   margin-bottom: 1.5rem;
 }
@@ -71,7 +77,8 @@
 }
 
 .quiz-actions button,
-.result button {
+.result button,
+.quiz-error button {
   padding: 0.5rem 1.5rem;
   border-radius: 8px;
   border: none;

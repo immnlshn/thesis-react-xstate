@@ -1,26 +1,38 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useAppSelector } from '../store';
+import React, { useRef, useState, useEffect } from 'react';
+import QuizMachineContext from "../QuizMachineContext.ts";
+
 
 const QuizToast: React.FC = () => {
-  const correct = useAppSelector((state) => state.quiz.lastAnswerCorrect);
-  const currentIndex = useAppSelector((state) => state.quiz.currentIndex);
-  const [show, setShow] = useState(false);
-  const prevIndex = useRef<number | null>(null);
+  const quizMachineRef = QuizMachineContext.useActorRef();
+  const visibleRef = useRef(false);
+  const [correct, setCorrect] = useState<boolean | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (currentIndex !== prevIndex.current && correct !== null) {
-      setShow(true);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = window.setTimeout(() => setShow(false), 1500);
-    }
-    prevIndex.current = currentIndex;
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [currentIndex, correct]);
+    const listener = (event: { correct: boolean }) => {
+      if (visibleRef.current) return;
 
-  if (!show || correct === null) return null;
+      setCorrect(event.correct);
+      visibleRef.current = true;
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = window.setTimeout(() => {
+        setCorrect(null);
+        visibleRef.current = false;
+      }, 1500);
+    };
+
+    const subscription = quizMachineRef.on("question-result", listener);
+
+    return () => subscription.unsubscribe();
+  }, [quizMachineRef]);
+
+  if (!visibleRef.current && correct === null) {
+    return null;
+  }
+
   return (
     <div className={`quiz-toast ${correct ? 'correct' : 'wrong'}`} role="status">
       {correct ? 'Richtig!' : 'Leider falsch.'}
